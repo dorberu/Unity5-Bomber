@@ -17,7 +17,7 @@ public class SocketController : MonoBehaviour {
 		};
 
 		ws.OnMessage += (sender, e) => {
-			Debug.Log ("WebSocket Message Type: " + e.GetType () + ", Data: " + e.Data);
+			Debug.Log ("WebSocket Message: " + System.Text.Encoding.UTF8.GetString(e.RawData));
 		};
 
 		ws.OnError += (sender, e) => {
@@ -28,24 +28,20 @@ public class SocketController : MonoBehaviour {
 			Debug.Log ("WebSocket Close: [" + e.Code + "] " + e.Reason);
 		};
 
-		Debug.Log ("Start");
 		ws.Log.Level = LogLevel.Trace;
 		ws.Connect ();
-		Debug.Log ("End");
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetKeyUp ("s")) {
-			ws.Send ("Test Message");
+			Debug.Log ("WebSocket Send Message");
+			ws.Send ("Send Test");
 		}
 	}
 
-	void OnApplicationQuit () {
-		Debug.Log ("Quit");
-		if (ws != null && ws.ReadyState == WebSocketState.Open) {
-			ws.Close ();
-			ws = null;
-		}
+	void OnDestroy () {
+		ws.Close ();
+		ws = null;
 	}
 }
