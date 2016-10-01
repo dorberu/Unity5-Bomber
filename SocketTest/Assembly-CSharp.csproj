@@ -58,6 +58,9 @@
  <Reference Include="websocket-sharp">
  <HintPath>C:/Users/ymatsuda/Documents/GitHub/Unity5-Bomber/SocketTest/Assets/Plugins/websocket-sharp.dll</HintPath>
  </Reference>
+ <Reference Include="MsgPack">
+ <HintPath>C:/Users/ymatsuda/Documents/GitHub/Unity5-Bomber/SocketTest/Assets/Plugins/MsgPack.dll</HintPath>
+ </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
