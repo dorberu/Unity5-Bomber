@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using System;
-using System.Collections;
+using System.IO;
+using System.Collections.Generic;
 using WebSocketSharp;
 using WebSocketSharp.Net;
+using MsgPack.Serialization;
 
 public class SocketController : MonoBehaviour {
 
@@ -17,11 +19,12 @@ public class SocketController : MonoBehaviour {
 		};
 
 		ws.OnMessage += (sender, e) => {
-			Debug.Log ("WebSocket Message: " + System.Text.Encoding.UTF8.GetString(e.RawData));
+			Dictionary<string, string> data = Deserialize (e.RawData);
+			Debug.Log ("Received Message: " + data["id"] + " : " + data["flag"] + " : " + data["日本語のキー"]);
 		};
 
 		ws.OnError += (sender, e) => {
-			Debug.Log ("WebSocket Error Message: " + e.Message);
+			Debug.Log ("Error Message: " + e.Message);
 		};
 
 		ws.OnClose += (sender, e) => {
@@ -35,9 +38,34 @@ public class SocketController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetKeyUp ("s")) {
-			Debug.Log ("WebSocket Send Message");
-			ws.Send ("Send Test");
+			Dictionary<string, string> data = getData ();
+			Debug.Log ("Send Message: " + data["id"] + " : " + data["flag"] + " : " + data["日本語のキー"]);
+			byte[] message = Serialize (data);
+			ws.Send (message);
 		}
+	}
+
+	Dictionary<string, string> getData () {
+		Dictionary<string, string> map = new Dictionary<string, string> ();
+		map["id"] = "2";
+		map["flag"] = "true";
+		map["日本語のキー"] = "日本語の値：クライアント";
+		return map;
+	}
+
+	byte[] Serialize (Dictionary<string, string> data) {
+		MemoryStream stream = new MemoryStream ();
+		var serializer = MessagePackSerializer.Get<Dictionary<string, string>> ();
+		serializer.Pack (stream, data);
+		byte[] ret = stream.GetBuffer ();
+		return ret;
+	}
+
+	Dictionary<string, string> Deserialize (byte[] data) {
+		MemoryStream stream = new MemoryStream (data);
+		var serializer = MessagePackSerializer.Get<Dictionary<string, string>> ();
+		Dictionary<string, string> ret = serializer.Unpack (stream);
+		return ret;
 	}
 
 	void OnDestroy () {

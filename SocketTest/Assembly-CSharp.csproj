@@ -55,11 +55,11 @@
  <Reference Include="UnityEngine.Analytics">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
  </Reference>
- <Reference Include="websocket-sharp">
- <HintPath>C:/Users/ymatsuda/Documents/GitHub/Unity5-Bomber/SocketTest/Assets/Plugins/websocket-sharp.dll</HintPath>
- </Reference>
  <Reference Include="MsgPack">
  <HintPath>C:/Users/ymatsuda/Documents/GitHub/Unity5-Bomber/SocketTest/Assets/Plugins/MsgPack.dll</HintPath>
+ </Reference>
+ <Reference Include="websocket-sharp">
+ <HintPath>C:/Users/ymatsuda/Documents/GitHub/Unity5-Bomber/SocketTest/Assets/Plugins/websocket-sharp.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
