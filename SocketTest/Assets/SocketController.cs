@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -10,9 +11,13 @@ public class SocketController : MonoBehaviour {
 
 	WebSocket ws;
 
+	String connectCount;
+	GameObject connectionText;
+
 	// Use this for initialization
 	void Start () {
 		ws = new WebSocket ("ws://192.168.11.4:8080");
+		this.connectionText = GameObject.Find ("connectionText");
 
 		ws.OnOpen += (sender, e) => {
 			Debug.Log ("WebSocket Open");
@@ -20,7 +25,10 @@ public class SocketController : MonoBehaviour {
 
 		ws.OnMessage += (sender, e) => {
 			Dictionary<string, string> data = Deserialize (e.RawData);
-			Debug.Log ("Received Message: " + data["id"] + " : " + data["flag"] + " : " + data["日本語のキー"]);
+			if (data["id"] == "1")
+			{
+				this.connectCount = "connectCount: " + data["connectCount"];
+			}
 		};
 
 		ws.OnError += (sender, e) => {
@@ -43,6 +51,7 @@ public class SocketController : MonoBehaviour {
 			byte[] message = Serialize (data);
 			ws.Send (message);
 		}
+		this.connectionText.GetComponent<Text> ().text = this.connectCount;
 	}
 
 	Dictionary<string, string> getData () {
