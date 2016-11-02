@@ -7,17 +7,13 @@ using WebSocketSharp;
 using WebSocketSharp.Net;
 using MsgPack.Serialization;
 
-public class SocketController : MonoBehaviour {
+public class SocketController {
 
 	WebSocket ws;
 
-	String connectCount;
-	GameObject connectionText;
-
 	// Use this for initialization
-	void Start () {
+	public SocketController () {
 		ws = new WebSocket ("ws://192.168.11.4:8080");
-		this.connectionText = GameObject.Find ("connectionText");
 
 		ws.OnOpen += (sender, e) => {
 			Debug.Log ("WebSocket Open");
@@ -25,10 +21,7 @@ public class SocketController : MonoBehaviour {
 
 		ws.OnMessage += (sender, e) => {
 			Dictionary<string, string> data = Deserialize (e.RawData);
-			if (data["id"] == "1")
-			{
-				this.connectCount = "connectCount: " + data["connectCount"];
-			}
+			Debug.Log ("WebSocket Message: id=" +  data["id"]);
 		};
 
 		ws.OnError += (sender, e) => {
@@ -42,19 +35,16 @@ public class SocketController : MonoBehaviour {
 		ws.Log.Level = LogLevel.Trace;
 		ws.Connect ();
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		if (Input.GetKeyUp ("s")) {
-			Dictionary<string, string> data = getData ();
-			Debug.Log ("Send Message: " + data["id"] + " : " + data["flag"] + " : " + data["日本語のキー"]);
-			byte[] message = Serialize (data);
-			ws.Send (message);
-		}
-		this.connectionText.GetComponent<Text> ().text = this.connectCount;
+
+	public void Send (Dictionary<string, string> data) {
+		String log = "";
+		foreach (KeyValuePair<String, String> pair in data) { log += (pair.Key + "=" + pair.Value + "; "); }
+		Debug.Log ("Send: " + log);
+		byte[] message = Serialize (data);
+		ws.Send (message);
 	}
 
-	Dictionary<string, string> getData () {
+	public Dictionary<string, string> getData () {
 		Dictionary<string, string> map = new Dictionary<string, string> ();
 		map["id"] = "2";
 		map["flag"] = "true";
@@ -77,7 +67,7 @@ public class SocketController : MonoBehaviour {
 		return ret;
 	}
 
-	void OnDestroy () {
+	public void Close () {
 		ws.Close ();
 		ws = null;
 	}
