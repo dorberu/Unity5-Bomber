@@ -4,10 +4,12 @@ using System.Collections;
 public class GameController : MonoBehaviour {
 
 	private SocketController socketController;
+	public GameObject playerPrefab;
+	public GameObject enemyPrefab;
 
 	// Use this for initialization
 	void Start () {
-		socketController = new SocketController ();
+		socketController = new SocketController (this);
 	}
 	
 	// Update is called once per frame
@@ -22,5 +24,9 @@ public class GameController : MonoBehaviour {
 			socketController.Close ();
 			socketController = null;
 		}
+	}
+
+	public void entryPlayer () {
+		Instantiate (playerPrefab);
 	}
 }

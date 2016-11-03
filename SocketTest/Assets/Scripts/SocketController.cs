@@ -9,14 +9,19 @@ using MsgPack.Serialization;
 
 public class SocketController {
 
+	private GameController _gameController;
 	WebSocket ws;
 
 	// Use this for initialization
-	public SocketController () {
+	public SocketController (GameController gameController) {
+		_gameController = gameController;
+
 		ws = new WebSocket ("ws://192.168.11.4:8080");
 
 		ws.OnOpen += (sender, e) => {
 			Debug.Log ("WebSocket Open");
+			_gameController.entryPlayer ();
+			_gameController.entryPlayer ();
 		};
 
 		ws.OnMessage += (sender, e) => {

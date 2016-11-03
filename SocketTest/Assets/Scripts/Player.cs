@@ -3,11 +3,21 @@ using System.Collections;
 
 public class Player : MonoBehaviour {
 
+	private static bool _existsInstance = false;
 	public float moveSpeed = 5f;
 	public float rotationSpeed = 360f;
 
 	CharacterController characterController;
 	Animator animator;
+
+	void Awake () {
+		if (_existsInstance) {
+			Destroy (gameObject);
+			return;
+		}
+		_existsInstance = true;
+		DontDestroyOnLoad (gameObject);
+	}
 
 	// Use this for initialization
 	void Start () {
