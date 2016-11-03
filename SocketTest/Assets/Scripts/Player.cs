@@ -3,19 +3,21 @@ using System.Collections;
 
 public class Player : MonoBehaviour {
 
-	private static bool _existsInstance = false;
+	public static bool existsInstance = false;
 	public float moveSpeed = 5f;
 	public float rotationSpeed = 360f;
+
+	public Vector3 direction = Vector3.zero;
 
 	CharacterController characterController;
 	Animator animator;
 
 	void Awake () {
-		if (_existsInstance) {
+		if (existsInstance) {
 			Destroy (gameObject);
 			return;
 		}
-		_existsInstance = true;
+		existsInstance = true;
 		DontDestroyOnLoad (gameObject);
 	}
 
@@ -27,7 +29,7 @@ public class Player : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		Vector3 direction = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+		direction = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
 		if (direction.sqrMagnitude > 0.01f) {
 			Vector3 forward = Vector3.Slerp(
 				transform.forward,

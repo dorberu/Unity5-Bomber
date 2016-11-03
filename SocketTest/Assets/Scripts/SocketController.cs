@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -12,29 +11,34 @@ public class SocketController {
 	private GameController _gameController;
 	WebSocket ws;
 
+	private bool _close = false;
+	private bool _error = false;
+
 	// Use this for initialization
 	public SocketController (GameController gameController) {
 		_gameController = gameController;
 
-		ws = new WebSocket ("ws://192.168.11.4:8080");
+//		ws = new WebSocket ("ws://192.168.11.4:8080");
+		ws = new WebSocket ("ws://www3415uo.sakura.ne.jp:8080");
 
 		ws.OnOpen += (sender, e) => {
 			Debug.Log ("WebSocket Open");
-			_gameController.entryPlayer ();
-			_gameController.entryPlayer ();
+			_gameController.connectionStatus ["Player"] = true;
 		};
 
 		ws.OnMessage += (sender, e) => {
 			Dictionary<string, string> data = Deserialize (e.RawData);
-			Debug.Log ("WebSocket Message: id=" +  data["id"]);
+			_gameController.packetReceive (data);
 		};
 
 		ws.OnError += (sender, e) => {
 			Debug.Log ("Error Message: " + e.Message);
+			_error = true;
 		};
 
 		ws.OnClose += (sender, e) => {
 			Debug.Log ("WebSocket Close: [" + e.Code + "] " + e.Reason);
+			_close = true;
 		};
 
 		ws.Log.Level = LogLevel.Trace;
@@ -42,19 +46,11 @@ public class SocketController {
 	}
 
 	public void Send (Dictionary<string, string> data) {
-		String log = "";
-		foreach (KeyValuePair<String, String> pair in data) { log += (pair.Key + "=" + pair.Value + "; "); }
-		Debug.Log ("Send: " + log);
+		if (! isConnect()) {
+			return;
+		}
 		byte[] message = Serialize (data);
 		ws.Send (message);
-	}
-
-	public Dictionary<string, string> getData () {
-		Dictionary<string, string> map = new Dictionary<string, string> ();
-		map["id"] = "2";
-		map["flag"] = "true";
-		map["日本語のキー"] = "日本語の値：クライアント";
-		return map;
 	}
 
 	byte[] Serialize (Dictionary<string, string> data) {
@@ -75,5 +71,12 @@ public class SocketController {
 	public void Close () {
 		ws.Close ();
 		ws = null;
+	}
+
+	public bool isConnect () {
+		if (_close || _error) {
+			return false;
+		}
+		return true;
 	}
 }
